@@ -1,0 +1,15 @@
+# Thin web tier image (Step 6). Publishes jobs, exposes SSE, relays events.
+FROM node:20-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm install --omit=dev && npm install tsx typescript
+
+COPY tsconfig.json ./
+COPY src ./src
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+CMD ["npx", "tsx", "src/web/server.ts"]

@@ -1,0 +1,89 @@
+# Full stack (Step 6). For the Step 2 slice bring up only infra:
+#   docker compose up -d rabbitmq mongo
+# For scaling:
+#   docker compose up --build --scale worker=3
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - '5672:5672' # AMQP
+      - '15672:15672' # management UI
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.runCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: viper
+      REDIS_URL: redis://redis:6379
+      REDIS_ENABLED: '1'
+      WORKER_PREFETCH: '1'
+      # Load-test tuning: fast, bounded mock latency so the matrix runs quickly.
+      MODEL_MIN_DELAY_MS: '${MODEL_MIN_DELAY_MS:-150}'
+      MODEL_MAX_DELAY_MS: '${MODEL_MAX_DELAY_MS:-400}'
+      MODEL_AVG_TURNS: '${MODEL_AVG_TURNS:-4}'
+      TOOL_MIN_DELAY_MS: '${TOOL_MIN_DELAY_MS:-80}'
+      TOOL_MAX_DELAY_MS: '${TOOL_MAX_DELAY_MS:-200}'
+      # Sandbox disabled by default in-compose (needs docker-in-docker). Enable
+      # with SANDBOX_ENABLED=1 and mounting the docker socket if desired.
+      SANDBOX_ENABLED: '0'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # No ports: workers are headless. Scale with --scale worker=N.
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - '3000:3000'
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: viper
+      REDIS_URL: redis://redis:6379
+      WEB_PORT: '3000'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" font-family="ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial">
+<rect width="720" height="420" fill="#ffffff"/>
+<text x="360" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">Time-to-pickup p95 @100 users: 1 vs 3 workers</text>
+<line x1="78" y1="350" x2="690" y2="350" stroke="#eee"/>
+<text x="68" y="354" text-anchor="end" font-size="11" fill="#666">0.0s</text>
+<line x1="78" y1="291.2" x2="690" y2="291.2" stroke="#eee"/>
+<text x="68" y="295.2" text-anchor="end" font-size="11" fill="#666">57s</text>
+<line x1="78" y1="232.4" x2="690" y2="232.4" stroke="#eee"/>
+<text x="68" y="236.4" text-anchor="end" font-size="11" fill="#666">115s</text>
+<line x1="78" y1="173.60000000000005" x2="690" y2="173.60000000000005" stroke="#eee"/>
+<text x="68" y="177.60000000000005" text-anchor="end" font-size="11" fill="#666">172s</text>
+<line x1="78" y1="114.80000000000001" x2="690" y2="114.80000000000001" stroke="#eee"/>
+<text x="68" y="118.80000000000001" text-anchor="end" font-size="11" fill="#666">230s</text>
+<line x1="78" y1="56" x2="690" y2="56" stroke="#eee"/>
+<text x="68" y="60" text-anchor="end" font-size="11" fill="#666">287s</text>
+<line x1="78" y1="56" x2="78" y2="350" stroke="#333"/>
+<line x1="78" y1="350" x2="690" y2="350" stroke="#333"/>
+<text transform="translate(20,203) rotate(-90)" text-anchor="middle" font-size="13" fill="#333">time to pickup p95</text>
+<rect x="139.2" y="94.3" width="183.6" height="255.7" fill="#e4572e" rx="3"/>
+<text x="231.0" y="88.3" text-anchor="middle" font-size="12" font-weight="600" fill="#333">250s</text>
+<text x="231.0" y="370" text-anchor="middle" font-size="11" fill="#444">1 worker</text>
+<rect x="445.2" y="276.9" width="183.6" height="73.1" fill="#2e86ab" rx="3"/>
+<text x="537.0" y="270.9" text-anchor="middle" font-size="12" font-weight="600" fill="#333">71s</text>
+<text x="537.0" y="370" text-anchor="middle" font-size="11" fill="#444">3 workers</text>
+</svg>

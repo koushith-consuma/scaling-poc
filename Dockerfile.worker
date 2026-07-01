@@ -1,0 +1,18 @@
+# Standalone worker image (Step 3). Builds and runs the worker with NO web
+# framework in the process. Fully independent deployable.
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install deps (worker needs amqplib, mongodb, redis, dotenv, tsx).
+COPY package.json package-lock.json* ./
+RUN npm install --omit=dev && npm install tsx typescript
+
+# Source.
+COPY tsconfig.json ./
+COPY src ./src
+
+ENV NODE_ENV=production
+
+# Entrypoint: the standalone worker loop. No express import in this process.
+CMD ["npx", "tsx", "src/worker.ts"]

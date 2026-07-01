@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" font-family="ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial">
+<rect width="720" height="420" fill="#ffffff"/>
+<text x="360" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">Time-to-pickup p50 vs concurrent users</text>
+<line x1="78" y1="360" x2="570" y2="360" stroke="#eee" stroke-width="1"/>
+<text x="68" y="364" text-anchor="end" font-size="11" fill="#666">0.0s</text>
+<line x1="78" y1="299.2" x2="570" y2="299.2" stroke="#eee" stroke-width="1"/>
+<text x="68" y="303.2" text-anchor="end" font-size="11" fill="#666">30s</text>
+<line x1="78" y1="238.39999999999998" x2="570" y2="238.39999999999998" stroke="#eee" stroke-width="1"/>
+<text x="68" y="242.39999999999998" text-anchor="end" font-size="11" fill="#666">61s</text>
+<line x1="78" y1="177.59999999999997" x2="570" y2="177.59999999999997" stroke="#eee" stroke-width="1"/>
+<text x="68" y="181.59999999999997" text-anchor="end" font-size="11" fill="#666">91s</text>
+<line x1="78" y1="116.79999999999998" x2="570" y2="116.79999999999998" stroke="#eee" stroke-width="1"/>
+<text x="68" y="120.79999999999998" text-anchor="end" font-size="11" fill="#666">122s</text>
+<line x1="78" y1="56" x2="570" y2="56" stroke="#eee" stroke-width="1"/>
+<text x="68" y="60" text-anchor="end" font-size="11" fill="#666">152s</text>
+<line x1="78" y1="360" x2="78" y2="365" stroke="#999"/>
+<text x="78" y="380" text-anchor="middle" font-size="12" fill="#444">10</text>
+<line x1="296.66666666666663" y1="360" x2="296.66666666666663" y2="365" stroke="#999"/>
+<text x="296.66666666666663" y="380" text-anchor="middle" font-size="12" fill="#444">50</text>
+<line x1="570" y1="360" x2="570" y2="365" stroke="#999"/>
+<text x="570" y="380" text-anchor="middle" font-size="12" fill="#444">100</text>
+<line x1="78" y1="56" x2="78" y2="360" stroke="#333"/>
+<line x1="78" y1="360" x2="570" y2="360" stroke="#333"/>
+<text x="324" y="405" text-anchor="middle" font-size="13" fill="#333">concurrent users</text>
+<text transform="translate(20,208) rotate(-90)" text-anchor="middle" font-size="13" fill="#333">time to pickup (p50)</text>
+<path d="M78.0,333.5 L296.7,224.2 L570.0,83.6" fill="none" stroke="#e4572e" stroke-width="2.5"/>
+<circle cx="78.0" cy="333.5" r="4" fill="#e4572e"/>
+<circle cx="296.7" cy="224.2" r="4" fill="#e4572e"/>
+<circle cx="570.0" cy="83.6" r="4" fill="#e4572e"/>
+<line x1="586" y1="64" x2="610" y2="64" stroke="#e4572e" stroke-width="3"/>
+<text x="616" y="68" font-size="12" fill="#333">1 worker (p50)</text>
+<path d="M78.0,351.4 L296.7,328.9 L570.0,286.9" fill="none" stroke="#2e86ab" stroke-width="2.5"/>
+<circle cx="78.0" cy="351.4" r="4" fill="#2e86ab"/>
+<circle cx="296.7" cy="328.9" r="4" fill="#2e86ab"/>
+<circle cx="570.0" cy="286.9" r="4" fill="#2e86ab"/>
+<line x1="586" y1="86" x2="610" y2="86" stroke="#2e86ab" stroke-width="3"/>
+<text x="616" y="90" font-size="12" fill="#333">3 workers (p50)</text>
+</svg>

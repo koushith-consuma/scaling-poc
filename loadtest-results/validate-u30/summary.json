@@ -1,0 +1,12 @@
+{
+  "totalRuns": 36,
+  "completed": 36,
+  "timeToPickupP50": 14247,
+  "timeToPickupP95": 25213,
+  "durationP50": 25732,
+  "durationP95": 26102,
+  "peakQueueDepth": 29,
+  "finalQueueDepth": 11,
+  "mongoLatP50": 3,
+  "mongoLatP95": 4
+}

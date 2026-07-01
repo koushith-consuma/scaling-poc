@@ -1,0 +1,37 @@
+{
+  "name": "viper-scaling-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "POC proving decoupled agent-run architecture scales: queue-driven standalone workers, per-thread ordering, live SSE, crash recovery.",
+  "scripts": {
+    "worker": "tsx src/worker.ts",
+    "web": "tsx src/web/server.ts",
+    "publish:one": "tsx src/scripts/publishOne.ts",
+    "publish:burst": "tsx src/scripts/publishBurst.ts",
+    "verify:ordering": "tsx src/scripts/verifyOrdering.ts",
+    "sse": "tsx src/scripts/sseClient.ts",
+    "unit:mocks": "tsx src/scripts/unitMocks.ts",
+    "sandbox:check": "tsx src/scripts/sandboxCheck.ts",
+    "index:probe": "tsx src/scripts/indexProbe.ts",
+    "loadtest": "tsx src/loadtest/harness.ts",
+    "charts": "tsx src/loadtest/genCharts.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0",
+    "redis": "^4.7.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
+}
