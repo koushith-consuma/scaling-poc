@@ -1,0 +1,23 @@
+:root {
+  --bg: #0e131f;
+  --panel: #161d2e;
+  --panel2: #1d2740;
+  --line: #29344f;
+  --fg: #e7ecf6;
+  --muted: #8494b4;
+  --accent: #4aa8ff;
+  --user: #2b6cb0;
+  --ok: #37d67a;
+  --warn: #ffb020;
+  --bad: #ff5c5c;
+}
+* { box-sizing: border-box; }
+html, body { padding: 0; margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+}
+button { font-family: inherit; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: #2a3450; border-radius: 6px; }

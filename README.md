@@ -27,14 +27,62 @@ LLM is never wired in.
 - **worker** (`src/worker.ts`) — standalone, no web imports; the thing scaled.
 - **web** (`src/web/server.ts`) — thin tier: `POST /runs`, SSE stream.
 
-## Quick start
+## Run the interactive app (chat + ops + chaos)
+
+A **Next.js chat UI** (separate service) lets you send messages and watch each
+one flow live through the whole chain — **browser → web → RabbitMQ → worker →
+Mongo → Redis → SSE → browser** — with a live ops panel (service health, queue
+depth, run counts, worker count) and **chaos buttons** to break things on
+purpose and watch it degrade + recover.
 
 ```bash
+# 1. infra + workers (workers are their own scaled service)
 npm install
 docker compose up -d rabbitmq mongo redis
-docker compose up -d --build --scale worker=3 web
+docker compose up -d --build --scale worker=3 worker
 
-# fire a run and watch it live
+# 2. backend web tier ON THE HOST (needs docker CLI for chaos/ops)
+CHAOS_ENABLED=1 npm run web            # → http://localhost:3000 (API + SSE)
+
+# 3. Next.js chat frontend
+cd frontend && npm install && npm run dev   # → http://localhost:3001
+```
+
+Open **http://localhost:3001**, type a message, hit Send. You'll see the
+assistant bubble stream its worker steps live (`tool_call`, `tool_result`, …)
+as they actually happen on a worker.
+
+### How to test it like a real app
+
+- **Basic chat** — send a message; watch it go `pending → running → done` with
+  live steps. That's the full pipeline round-trip.
+- **Per-thread ordering** — hit **“×3 same thread”**. Three runs enter the same
+  thread; the guard makes them run **one after another**, never concurrently.
+- **Scaling** — set worker count in the chaos panel (or
+  `docker compose up -d --scale worker=N worker`) and watch queue-depth /
+  pickup change.
+
+### How to break it (chaos panel)
+
+| Button | What it does | What you should see |
+|---|---|---|
+| 💥 Kill a worker | `docker kill` one worker mid-run | worker count drops; in-flight run is recovered (RabbitMQ redelivery + reaper) and still finishes |
+| Stop Redis | stops the events-OUT layer | live push stops, but events **keep arriving** via the Mongo poll fallback — nothing lost |
+| Stop Mongo | stops the source of truth | new sends get a `503`; existing streams pause; **Start Mongo** and it resumes |
+| Stop RabbitMQ | stops job intake | `POST /runs` fails fast; **Start RabbitMQ** and sends work again |
+| Scale workers | `--scale worker=N` | queue drains faster/slower; pickup latency moves |
+
+> The web tier runs on the host because the chaos/ops endpoints shell out to the
+> Docker CLI. You can also run everything in compose
+> (`docker compose up -d --build`), but then chaos is disabled in the container
+> (`CHAOS_ENABLED=0`) — use the host web tier for the full experience.
+
+## Quick start (CLI, no UI)
+
+```bash
+docker compose up -d rabbitmq mongo redis
+docker compose up -d --build --scale worker=3 worker
+
 curl -XPOST localhost:3000/runs -H 'content-type: application/json' -d '{"threadId":"t1"}'
 npm run sse -- <runId>
 ```

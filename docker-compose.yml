@@ -65,6 +65,13 @@ services:
         condition: service_healthy
     # No ports: workers are headless. Scale with --scale worker=N.
 
+  # NOTE on the web tier + chaos:
+  # The interactive web tier exposes /api/chaos and /api/ops, which shell out to
+  # the Docker CLI to kill/scale/stop containers and count workers. That is far
+  # simpler and safer to run ON THE HOST (`CHAOS_ENABLED=1 npm run web`) than to
+  # mount the Docker socket into a container. This compose `web` service is the
+  # plain relay (no chaos); for the full interactive experience run web on the
+  # host. See README "Run the interactive app".
   web:
     build:
       context: .
@@ -76,7 +83,9 @@ services:
       MONGO_URL: mongodb://mongo:27017
       MONGO_DB: viper
       REDIS_URL: redis://redis:6379
+      REDIS_ENABLED: '1'
       WEB_PORT: '3000'
+      CHAOS_ENABLED: '0'
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -84,6 +93,20 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  # Next.js chat frontend — separate service. Proxies /runs + /api to the web
+  # tier. Point it at the host-run web tier so chaos/ops work.
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    environment:
+      # host.docker.internal → the host, where the chaos-enabled web tier runs.
+      BACKEND_URL: http://host.docker.internal:3000
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
 
 volumes:
   mongo-data:
