@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: viper-worker
+  labels:
+    app: viper-worker
+spec:
+  replicas: 10  # KEDA will override this based on queue depth
+  selector:
+    matchLabels:
+      app: viper-worker
+  template:
+    metadata:
+      labels:
+        app: viper-worker
+    spec:
+      containers:
+      - name: worker
+        image: viper-worker:latest  # Replace with your registry
+        env:
+        - name: RABBITMQ_URL
+          value: "amqp://guest:guest@rabbitmq:5672"
+        - name: MONGO_URL
+          value: "mongodb://mongo:27017"
+        - name: MONGO_DB
+          value: "viper"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: REDIS_ENABLED
+          value: "1"
+        - name: WORKER_PREFETCH
+          value: "20"
+        - name: MODEL_MIN_DELAY_MS
+          value: "1500"
+        - name: MODEL_MAX_DELAY_MS
+          value: "4000"
+        - name: TOOL_MIN_DELAY_MS
+          value: "600"
+        - name: TOOL_MAX_DELAY_MS
+          value: "1500"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: viper-worker-scaler
+spec:
+  scaleTargetRef:
+    name: viper-worker
+  minReplicaCount: 10      # Always keep 10 workers running
+  maxReplicaCount: 1000    # Scale up to 1000 workers max
+  pollingInterval: 15      # Check queue every 15 seconds
+  cooldownPeriod: 60       # Wait 60s before scaling down
+  triggers:
+  - type: rabbitmq
+    metadata:
+      queueName: agent-run-queue
+      mode: QueueLength
+      value: "20"           # Target: 20 messages per worker
+      host: "amqp://guest:guest@rabbitmq:5672"

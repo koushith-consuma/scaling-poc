@@ -8,6 +8,7 @@ export async function createRun(params: {
   runId?: string;
   threadId: string;
   seed?: number;
+  prompt?: string; // the user's message text, so history can be rebuilt
 }): Promise<RunDoc> {
   const { runs } = await getMongo();
   const now = new Date();
@@ -19,6 +20,7 @@ export async function createRun(params: {
     createdAt: now,
     updatedAt: now,
     ...(params.seed !== undefined ? { seed: params.seed } : {}),
+    ...(params.prompt !== undefined ? { prompt: params.prompt } : {}),
   };
   await runs.insertOne(doc);
   return doc;

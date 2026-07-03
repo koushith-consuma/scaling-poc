@@ -1,4 +1,5 @@
-# Thin web tier image (Step 6). Publishes jobs, exposes SSE, relays events.
+# Backend API tier image. Thin & stateless: publishes jobs to the queue,
+# exposes SSE, relays events. Does no agent work itself.
 FROM node:20-slim
 
 WORKDIR /app
@@ -12,4 +13,4 @@ COPY src ./src
 ENV NODE_ENV=production
 EXPOSE 3000
 
-CMD ["npx", "tsx", "src/web/server.ts"]
+CMD ["npx", "tsx", "src/api/server.ts"]

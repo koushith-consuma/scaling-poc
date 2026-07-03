@@ -13,8 +13,13 @@ export interface RedisPublisher {
 }
 
 export function runChannel(runId: string): string {
-  return `run:${runId}`;
+  return `run-events:${runId}`;
 }
+
+/** Capped list holding the most recent events, so the GUI inspector has real
+ *  Redis data to show (pub/sub messages themselves are ephemeral). */
+export const RECENT_EVENTS_KEY = 'recent-run-events';
+const RECENT_MAX = 200;
 
 export async function createRedisPublisher(): Promise<RedisPublisher> {
   const client: RedisClientType = createClient({
@@ -55,9 +60,18 @@ export async function createRedisPublisher(): Promise<RedisPublisher> {
         warn('skip publish: redis not ready');
         return;
       }
+      const json = JSON.stringify(event);
       client
-        .publish(runChannel(event.runId), JSON.stringify(event))
+        .publish(runChannel(event.runId), json)
         .catch((e) => warn(`publish failed (ignored): ${(e as Error).message}`));
+      // Also keep a capped recent-events list for the GUI inspector (LPUSH +
+      // LTRIM). Still fire-and-forget; errors ignored.
+      client
+        .multi()
+        .lPush(RECENT_EVENTS_KEY, json)
+        .lTrim(RECENT_EVENTS_KEY, 0, RECENT_MAX - 1)
+        .exec()
+        .catch(() => {});
     },
     close: async () => {
       await client.quit().catch(() => {});

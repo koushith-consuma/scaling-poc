@@ -1,0 +1,64 @@
+.page { min-height: 100vh; padding: 0 0 40px; }
+.header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.title { font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 14px; }
+.navLink { font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; background: var(--panel2);
+  padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); }
+.navLink:hover { background: var(--line); }
+.controls { display: flex; align-items: center; gap: 14px; }
+.auto { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.controls button { background: var(--accent); color: #04101f; border: 0; padding: 7px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 22px; }
+@media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+.col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+
+.storeHead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.storeHead h2 { font-size: 16px; margin: 0; display: flex; align-items: baseline; gap: 8px; }
+.sub { font-size: 11px; color: var(--muted); font-weight: 500; }
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.up { background: var(--ok); } .down { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
+.err { background: #3a1414; color: #ffb4b4; border: 1px solid #5a2020; padding: 8px 12px; border-radius: 8px; font-size: 12.5px; margin-bottom: 12px; }
+
+.counts { display: flex; gap: 10px; margin-bottom: 14px; }
+.count { flex: 1; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: center; }
+.count b { display: block; font-size: 22px; }
+.count span { font-size: 11px; color: var(--muted); }
+
+.queueStats { display: flex; gap: 10px; margin-bottom: 14px; }
+.queueStat { flex: 1; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: center; }
+.queueStat b { display: block; font-size: 22px; color: var(--warn); }
+.queueStat span { font-size: 11px; color: var(--muted); }
+
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.tabs button { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+.activeTab { background: var(--line) !important; color: var(--fg) !important; }
+
+.h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 18px 0 8px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--line); position: sticky; }
+.table td { padding: 6px 8px; border-bottom: 1px solid #202942; }
+.table tr:hover td { background: #1a2338; }
+.mono { font-family: ui-monospace, monospace; }
+.muted { color: var(--muted); }
+.payload { font-family: ui-monospace, monospace; color: var(--muted); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { text-align: center; color: var(--muted); padding: 16px !important; font-style: italic; }
+
+.badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; }
+.pending { background: #2a3450; color: var(--muted); }
+.running { background: #123353; color: var(--accent); }
+.done { background: #0f3a24; color: var(--ok); }
+.failed { background: #3a1414; color: var(--bad); }
+
+.evt { font-family: ui-monospace, monospace; font-weight: 600; }
+.t_run_started { color: var(--accent); }
+.t_model_turn { color: #b794f6; }
+.t_tool_call { color: var(--warn); }
+.t_tool_result { color: #9aa8c8; }
+.t_run_done { color: var(--ok); }
+.t_run_failed { color: var(--bad); }
+
+.stream { max-height: 320px; overflow-y: auto; background: #0a0e17; border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+.streamRow { display: flex; gap: 10px; padding: 4px 8px; font-size: 12px; border-bottom: 1px solid #161d2e; }
+.streamRow .payload { flex: 1; }

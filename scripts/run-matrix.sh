@@ -11,7 +11,10 @@
 #   RAMP_MS=3000           user ramp window
 #   TIMEOUT_MS=180000      per-cell drain timeout
 set -euo pipefail
-cd "$(dirname "$0")/.."
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+# npm commands live in backend/.
+npmb() { (cd "$ROOT/backend" && npm "$@"); }
 
 WORKERS="${WORKERS:-1 3}"
 USERS="${USERS:-10 50 100}"
@@ -21,7 +24,7 @@ TIMEOUT_MS="${TIMEOUT_MS:-180000}"
 echo "== matrix: workers=[$WORKERS] users=[$USERS] =="
 
 # Ensure infra is up.
-docker compose up -d rabbitmq mongo redis web >/dev/null
+docker compose up -d rabbitmq mongo redis backend >/dev/null
 
 wait_workers_ready() {
   local n="$1"
@@ -45,7 +48,7 @@ for w in $WORKERS; do
   for u in $USERS; do
     label="w${w}-u${u}"
     echo "== cell $label =="
-    npm run loadtest -- --users "$u" --label "$label" --ramp-ms "$RAMP_MS" --timeout-ms "$TIMEOUT_MS" \
+    npmb run loadtest -- --users "$u" --label "$label" --ramp-ms "$RAMP_MS" --timeout-ms "$TIMEOUT_MS" \
       2>&1 | grep -E '\[load\]|index|timeToPickup|duration|Queue|mongoLat|completed|totalRuns' || true
   done
 done

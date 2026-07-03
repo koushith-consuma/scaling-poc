@@ -30,8 +30,8 @@ export async function getMongo(): Promise<Collections> {
   await client.connect();
   db = client.db(config.mongoDb);
 
-  const runs = db.collection<RunDoc>('runs');
-  const events = db.collection<EventDoc>('events');
+  const runs = db.collection<RunDoc>('agent_runs');
+  const events = db.collection<EventDoc>('run_events');
   const threadLocks = db.collection<ThreadLock>('thread_locks');
 
   if (!config.mongoSkipIndexes) {

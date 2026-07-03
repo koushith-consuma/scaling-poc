@@ -4,7 +4,7 @@ import 'dotenv/config';
 export const config = {
   rabbitUrl: process.env.RABBITMQ_URL ?? 'amqp://guest:guest@localhost:5672',
   rabbitMgmtUrl: process.env.RABBITMQ_MGMT_URL ?? 'http://guest:guest@localhost:15672',
-  runQueue: process.env.RUN_QUEUE ?? 'run-execute',
+  runQueue: process.env.RUN_QUEUE ?? 'agent-run-queue',
 
   mongoUrl: process.env.MONGO_URL ?? 'mongodb://localhost:27017',
   mongoDb: process.env.MONGO_DB ?? 'viper',
@@ -33,6 +33,14 @@ export const config = {
   tool: {
     minDelayMs: Number(process.env.TOOL_MIN_DELAY_MS ?? 200),
     maxDelayMs: Number(process.env.TOOL_MAX_DELAY_MS ?? 1500),
+  },
+
+  // Per-run timeout — abort a run if it exceeds this duration.
+  runTimeoutMs: Number(process.env.RUN_TIMEOUT_MS ?? 120000), // 2 minutes default
+
+  rateLimit: {
+    windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 60000),
+    maxRequests: Number(process.env.RATE_LIMIT_MAX ?? 60),
   },
 
   // Interactive web app / chaos controls (Step 9 — testability).

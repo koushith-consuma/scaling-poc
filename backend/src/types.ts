@@ -1,6 +1,6 @@
 /** Shared domain types across worker, web, mocks, and load harness. */
 
-export type RunStatus = 'pending' | 'running' | 'done' | 'failed';
+export type RunStatus = 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
 
 export interface RunDoc {
   _id: string; // runId
@@ -12,8 +12,10 @@ export interface RunDoc {
   claimedBy?: string; // worker id, for crash-recovery / reaper
   claimedAt?: Date;
   finishedAt?: Date;
+  cancelledAt?: Date;
   error?: string;
   seed?: number; // for reproducible mock runs
+  prompt?: string; // the user's message text (so chat history can be rebuilt)
 }
 
 export type EventType =
@@ -22,7 +24,8 @@ export type EventType =
   | 'tool_call'
   | 'tool_result'
   | 'run_done'
-  | 'run_failed';
+  | 'run_failed'
+  | 'run_cancelled';
 
 export interface EventDoc {
   _id: string;

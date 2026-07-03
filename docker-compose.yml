@@ -36,9 +36,24 @@ services:
       timeout: 5s
       retries: 10
 
+  # Redis web GUI (like RabbitMQ's management UI, but for Redis).
+  # Open http://localhost:5540 → "Add database" is pre-filled via env below.
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - '5540:5540'
+    environment:
+      # Auto-register the local Redis so you don't have to add it by hand.
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: '6379'
+      RI_REDIS_ALIAS: viper-redis
+    depends_on:
+      redis:
+        condition: service_healthy
+
   worker:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.worker
     environment:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
@@ -46,13 +61,13 @@ services:
       MONGO_DB: viper
       REDIS_URL: redis://redis:6379
       REDIS_ENABLED: '1'
-      WORKER_PREFETCH: '1'
-      # Load-test tuning: fast, bounded mock latency so the matrix runs quickly.
-      MODEL_MIN_DELAY_MS: '${MODEL_MIN_DELAY_MS:-150}'
-      MODEL_MAX_DELAY_MS: '${MODEL_MAX_DELAY_MS:-400}'
-      MODEL_AVG_TURNS: '${MODEL_AVG_TURNS:-4}'
-      TOOL_MIN_DELAY_MS: '${TOOL_MIN_DELAY_MS:-80}'
-      TOOL_MAX_DELAY_MS: '${TOOL_MAX_DELAY_MS:-200}'
+      REAPER_ENABLED: '1'
+      WORKER_PREFETCH: '${WORKER_PREFETCH:-20}'  # Default 20 for high concurrency
+      MODEL_MIN_DELAY_MS: '${MODEL_MIN_DELAY_MS:-300}'
+      MODEL_MAX_DELAY_MS: '${MODEL_MAX_DELAY_MS:-1200}'
+      MODEL_AVG_TURNS: '${MODEL_AVG_TURNS:-3}'
+      TOOL_MIN_DELAY_MS: '${TOOL_MIN_DELAY_MS:-200}'
+      TOOL_MAX_DELAY_MS: '${TOOL_MAX_DELAY_MS:-800}'
       # Sandbox disabled by default in-compose (needs docker-in-docker). Enable
       # with SANDBOX_ENABLED=1 and mounting the docker socket if desired.
       SANDBOX_ENABLED: '0'
@@ -65,17 +80,17 @@ services:
         condition: service_healthy
     # No ports: workers are headless. Scale with --scale worker=N.
 
-  # NOTE on the web tier + chaos:
-  # The interactive web tier exposes /api/chaos and /api/ops, which shell out to
-  # the Docker CLI to kill/scale/stop containers and count workers. That is far
-  # simpler and safer to run ON THE HOST (`CHAOS_ENABLED=1 npm run web`) than to
-  # mount the Docker socket into a container. This compose `web` service is the
-  # plain relay (no chaos); for the full interactive experience run web on the
+  # Backend API tier. Thin & stateless: publishes jobs, exposes SSE + metrics.
+  # NOTE on the failure simulator: /api/chaos and /api/ops shell out to the
+  # Docker CLI to kill/scale/count containers. That's far simpler and safer to
+  # run ON THE HOST (`CHAOS_ENABLED=1 npm run api`) than to mount the Docker
+  # socket into a container. This compose `backend` service is the plain relay
+  # (simulator off); for the full interactive experience run the backend on the
   # host. See README "Run the interactive app".
-  web:
+  backend:
     build:
-      context: .
-      dockerfile: Dockerfile.web
+      context: ./backend
+      dockerfile: Dockerfile.api
     ports:
       - '3000:3000'
     environment:
@@ -94,8 +109,8 @@ services:
       redis:
         condition: service_healthy
 
-  # Next.js chat frontend — separate service. Proxies /runs + /api to the web
-  # tier. Point it at the host-run web tier so chaos/ops work.
+  # Next.js chat frontend — the only user-facing UI. Proxies /runs + /api to the
+  # backend. Point it at the host-run backend so the failure simulator works.
   frontend:
     build:
       context: ./frontend
@@ -103,7 +118,7 @@ services:
     ports:
       - '3001:3001'
     environment:
-      # host.docker.internal → the host, where the chaos-enabled web tier runs.
+      # host.docker.internal → the host, where the simulator-enabled backend runs.
       BACKEND_URL: http://host.docker.internal:3000
     extra_hosts:
       - 'host.docker.internal:host-gateway'

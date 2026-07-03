@@ -26,7 +26,7 @@ export async function claimRun(runId: string, workerId: string): Promise<RunDoc 
 /** Mark a claimed run terminal. */
 export async function finishRun(
   runId: string,
-  status: 'done' | 'failed',
+  status: 'done' | 'failed' | 'cancelled',
   error?: string,
 ): Promise<void> {
   const { runs } = await getMongo();

@@ -34,7 +34,17 @@ export async function mockModel(
 
   const forceContinue = context.turn === 0; // at least one turn of work
   if (!forceContinue && roll < stopProb) {
-    return { type: 'done', summary: `completed in ${context.turn + 1} turns` };
+    // A natural-language final reply so the chat UI shows a real answer (not
+    // just "completed in N turns"). Canned + varied by the rng for realism.
+    const replies = [
+      "Done — I looked into that and here's what I found. Everything checks out.",
+      'All set. I ran the steps and the result is ready for you.',
+      'Finished — I handled the request end to end. Let me know if you want more.',
+      "Here's your answer: the task completed successfully across all the steps.",
+      "Wrapped up. I went through it turn by turn and it's good to go.",
+    ];
+    const reply = replies[Math.floor(rng() * replies.length)] ?? replies[0]!;
+    return { type: 'done', summary: reply };
   }
 
   // Non-final turn: tool_call vs plain response.
